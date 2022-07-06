@@ -48,9 +48,13 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                       child: ListView.builder(
                         itemCount: snapshot.data!.names.length,
                         itemBuilder: (context, index) {
-                          var name = snapshot.data!;
+                          var data = snapshot.data!.names[index];
                           return ListTile(
-                            title: Text(name.names[index].name),
+                            title: Text(data.name),
+                            subtitle: Text((data.desc == '')
+                                ? 'No Description'
+                                : data.desc),
+                            trailing: Text(data.positive_votes.toString()),
                           );
                         },
                       ),

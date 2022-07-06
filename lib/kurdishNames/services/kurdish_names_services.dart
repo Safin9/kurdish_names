@@ -7,7 +7,7 @@ class KurdishNameService {
         scheme: 'https',
         host: 'nawikurdi.com',
         path: 'api',
-        queryParameters: {'limit': '5', 'offset': '0', 'gender': 'F'});
+        queryParameters: {'limit': '50', 'offset': '0', 'gender': 'F'});
 
     // var uri1 = "https://nawikurdi.com/api?limit=5&gender=F&offset=0";
     http.Response response =
@@ -22,9 +22,7 @@ class KurdishNameService {
 //         scheme: 'https',
 //         host: 'nawikurdi.com',
 //         path: 'api',
-//         queryParameters: {'limit': '5', 'offset': '0', 'gender': 'F'});
-
-//    
+//         queryParameters: {'limit': '5', 'offset': '0', 'gender': 'F'});  
 //     http.Response response =
 //         await http.get(uri).catchError((err) => print(err));
 //    

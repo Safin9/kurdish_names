@@ -29,12 +29,10 @@ class KurdishNamesModel {
 
   factory KurdishNamesModel.fromMap(Map<String, dynamic> map) {
     return KurdishNamesModel(
-      names: List<Name>.from(
-        (map['names'] as List<int>).map<Name>(
-          (x) => Name.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
-      recordCount: map['recordCount'].toInt() as int,
+      names: List<Name>.from((map['names']?.map(
+        (x) => Name.fromMap(x),
+      ))),
+      recordCount: map['recordCount'].toInt() ?? 0,
     );
   }
 
