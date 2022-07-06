@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kurdish_names/kurdishNames/model/classs_model.dart';
 import 'package:kurdish_names/kurdishNames/services/kurdish_names_services.dart';
@@ -36,7 +37,7 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                   builder: ((context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
-                        child: CircularProgressIndicator(),
+                        child: CupertinoActivityIndicator(),
                       );
                     } else if (snapshot.hasError) {
                       return const Center(
