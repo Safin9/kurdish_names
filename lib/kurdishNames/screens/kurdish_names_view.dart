@@ -17,6 +17,10 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
 
   //TODO: rendering
   KurdishNameService kurdishnames = KurdishNameService();
+  String gender = 'Male';
+  IconData genderIcon = Icons.male;
+  Color genderColor = Colors.blue;
+  String genderType = 'M';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +37,8 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
             Expanded(
               child: Container(
                 child: FutureBuilder<KurdishNamesModel>(
-                  future: kurdishnames.fetchdata(),
+                  future:
+                      kurdishnames.fetchdata(limit: 5, genderType: genderType),
                   builder: ((context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -50,12 +55,14 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                         itemCount: snapshot.data!.names.length,
                         itemBuilder: (context, index) {
                           var data = snapshot.data!.names[index];
-                          return ListTile(
+                          return ExpansionTile(
+                            trailing: Text('${index + 1}'),
                             title: Text(data.name),
-                            subtitle: Text((data.desc == '')
-                                ? 'No Description'
-                                : data.desc),
-                            trailing: Text(data.positive_votes.toString()),
+                            children: [
+                              Text((data.desc == '')
+                                  ? 'No Description'
+                                  : data.desc),
+                            ],
                           );
                         },
                       ),
@@ -63,6 +70,35 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                   }),
                 ),
               ),
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  height: 30,
+                  width: 110,
+                  child: ElevatedButton.icon(
+                      onPressed: () => setState(() {
+                            genderType == 'M'
+                                ? genderType = 'F'
+                                : genderType = 'M';
+                            (genderIcon == Icons.male)
+                                ? genderIcon = Icons.female
+                                : genderIcon = Icons.male;
+                            (gender == 'Male')
+                                ? gender = 'Female'
+                                : gender = 'Male';
+                            genderColor == Colors.blue
+                                ? genderColor = Colors.pink
+                                : genderColor = Colors.blue;
+                          }),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(genderColor),
+                      ),
+                      icon: Icon(genderIcon),
+                      label: Text(gender)),
+                )
+              ],
             ),
           ],
         ),
