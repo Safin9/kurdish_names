@@ -22,12 +22,21 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
   Color genderColor = Colors.blue;
   String genderType = 'M';
   int limitName = 20;
+  int? limitization;
   bool isLiked = false;
   bool isVoteUp = false, isVoteDown = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            setState(() {
+              limitName = limitization!;
+            });
+          },
+          label: const Text('Limitization')),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -65,22 +74,21 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
             SizedBox(
               width: double.infinity,
               child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Limit',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  decoration: InputDecoration(
+                    labelText: 'Limit',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (value) => setState(() {
-                  if (value.isNotEmpty) {
-                    limitName = int.parse(value);
-                  } else {
-                    limitName = 20;
-                  }
-                }),
-              ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      limitization = int.parse(value);
+                    } else {
+                      limitization = 20;
+                    }
+                  }),
             ),
             Expanded(
               child: SizedBox(
