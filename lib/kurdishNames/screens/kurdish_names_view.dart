@@ -23,6 +23,7 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
   String genderType = 'M';
   int limitName = 20;
   bool isLiked = false;
+  bool isVoteUp = false, isVoteDown = false;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,30 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        actions: const [],
+        actions: [
+          Row(
+            children: [
+              SizedBox(
+                width: 115,
+                child: myElevatedButton(
+                  icon: genderIcon,
+                  label: gender,
+                  color: genderColor,
+                  onPressed: () => setState(() {
+                    genderType == 'M' ? genderType = 'F' : genderType = 'M';
+                    (genderIcon == Icons.male)
+                        ? genderIcon = Icons.female
+                        : genderIcon = Icons.male;
+                    (gender == 'Male') ? gender = 'Female' : gender = 'Male';
+                    genderColor == Colors.blue
+                        ? genderColor = Colors.pink
+                        : genderColor = Colors.blue;
+                  }),
+                ),
+              ),
+            ],
+          )
+        ],
       ),
       body: SizedBox(
         width: double.infinity,
@@ -38,8 +62,28 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text('Kurdish Names'),
+            SizedBox(
+              width: double.infinity,
+              child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Limit',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                keyboardType: TextInputType.number,
+                onChanged: (value) => setState(() {
+                  if (value.isNotEmpty) {
+                    limitName = int.parse(value);
+                  } else {
+                    limitName = 20;
+                  }
+                }),
+              ),
+            ),
             Expanded(
-              child: Container(
+              child: SizedBox(
                 child: FutureBuilder<KurdishNamesModel>(
                   future: kurdishnames.fetchdata(
                       limit: limitName, genderType: genderType),
@@ -67,28 +111,48 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                               Text((data.desc == '')
                                   ? 'No Description'
                                   : data.desc),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  //FIXME: add a like button
-
-                                  setState(
-                                    () {
-                                      isLiked = !isLiked;
-                                      kurdishnames.voting(
-                                          nameId: data.nameId, isVoteUp: true);
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  myElevatedButton(
+                                    color: Colors.blue,
+                                    icon: isLiked
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    label: (isVoteUp) ? 'Voted' : 'Vote',
+                                    onPressed: () {
+                                      setState(
+                                        () {
+                                          isLiked = !isLiked;
+                                          isVoteUp = !isVoteUp;
+                                          kurdishnames.voting(
+                                              nameId: data.nameId,
+                                              isVoteUp: true);
+                                        },
+                                      );
                                     },
-                                  );
-                                },
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          genderColor),
-                                ),
-                                icon: isLiked
-                                    ? const Icon(Icons.favorite)
-                                    : const Icon(Icons.favorite_border),
-                                label: Text((isLiked) ? 'Like' : 'Liked'),
-                              ),
+                                  ),
+                                  myElevatedButton(
+                                    color: Colors.red,
+                                    icon: isLiked
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    label: (isVoteDown) ? 'Voted' : 'Vote',
+                                    onPressed: () {
+                                      setState(
+                                        () {
+                                          isVoteDown = !isVoteDown;
+                                          isLiked = !isLiked;
+                                          kurdishnames.voting(
+                                              nameId: data.nameId,
+                                              isVoteUp: false);
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              )
                             ],
                           );
                         },
@@ -98,37 +162,24 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                 ),
               ),
             ),
-            Row(
-              children: [
-                SizedBox(
-                  height: 30,
-                  width: 110,
-                  child: ElevatedButton.icon(
-                      onPressed: () => setState(() {
-                            genderType == 'M'
-                                ? genderType = 'F'
-                                : genderType = 'M';
-                            (genderIcon == Icons.male)
-                                ? genderIcon = Icons.female
-                                : genderIcon = Icons.male;
-                            (gender == 'Male')
-                                ? gender = 'Female'
-                                : gender = 'Male';
-                            genderColor == Colors.blue
-                                ? genderColor = Colors.pink
-                                : genderColor = Colors.blue;
-                          }),
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(genderColor),
-                      ),
-                      icon: Icon(genderIcon),
-                      label: Text(gender)),
-                )
-              ],
-            ),
           ],
         ),
+      ),
+    );
+  }
+
+  ElevatedButton myElevatedButton({
+    required IconData icon,
+    required String label,
+    required GestureTapCallback onPressed,
+    required Color color,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon),
+      label: Text(label),
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(color),
       ),
     );
   }
