@@ -21,12 +21,16 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
   IconData genderIcon = Icons.male;
   Color genderColor = Colors.blue;
   String genderType = 'M';
+  int limitName = 20;
+  bool isLiked = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
+        actions: const [],
       ),
       body: SizedBox(
         width: double.infinity,
@@ -37,8 +41,8 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
             Expanded(
               child: Container(
                 child: FutureBuilder<KurdishNamesModel>(
-                  future:
-                      kurdishnames.fetchdata(limit: 5, genderType: genderType),
+                  future: kurdishnames.fetchdata(
+                      limit: limitName, genderType: genderType),
                   builder: ((context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -56,12 +60,35 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                         itemBuilder: (context, index) {
                           var data = snapshot.data!.names[index];
                           return ExpansionTile(
-                            trailing: Text('${index + 1}'),
+                            leading: Text(data.positive_votes.toString()),
+                            trailing: Text(data.nameId.toString()),
                             title: Text(data.name),
                             children: [
                               Text((data.desc == '')
                                   ? 'No Description'
                                   : data.desc),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  //FIXME: add a like button
+
+                                  setState(
+                                    () {
+                                      isLiked = !isLiked;
+                                      kurdishnames.voting(
+                                          nameId: data.nameId, isVoteUp: true);
+                                    },
+                                  );
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          genderColor),
+                                ),
+                                icon: isLiked
+                                    ? const Icon(Icons.favorite)
+                                    : const Icon(Icons.favorite_border),
+                                label: Text((isLiked) ? 'Like' : 'Liked'),
+                              ),
                             ],
                           );
                         },

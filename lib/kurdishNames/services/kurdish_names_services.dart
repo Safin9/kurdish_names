@@ -20,6 +20,15 @@ class KurdishNameService {
     KurdishNamesModel kurdishNames = KurdishNamesModel.fromJson(response.body);
     return kurdishNames;
   }
+
+  Future voting({required int nameId, required bool isVoteUp}) async {
+    var uri = Uri.parse("https://nawikurdi.com/api/vote");
+    http.Response response = await http.post(uri, body: {
+      "name_id": nameId.toString(),
+      "uid": "iudsdj",
+      "impact": isVoteUp ? "positive" : "negative"
+    });
+  }
 }
 // class KurdishNameService {
 //   Future<String> fetchdata() async {
