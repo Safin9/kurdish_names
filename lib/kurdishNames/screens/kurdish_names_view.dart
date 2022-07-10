@@ -107,63 +107,69 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                     }
                     return Directionality(
                       textDirection: TextDirection.rtl,
-                      child: ListView.builder(
-                        itemCount: snapshot.data!.names.length,
-                        itemBuilder: (context, index) {
-                          var data = snapshot.data!.names[index];
-                          return ExpansionTile(
-                            leading: Text(data.positive_votes.toString()),
-                            trailing: Text(data.nameId.toString()),
-                            title: Text(data.name),
-                            children: [
-                              Text((data.desc == '')
-                                  ? 'No Description'
-                                  : data.desc),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  myElevatedButton(
-                                    color: Colors.blue,
-                                    icon: isLiked
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    label: (isVoteUp) ? 'Voted' : 'Vote',
-                                    onPressed: () {
-                                      setState(
-                                        () {
-                                          isLiked = !isLiked;
-                                          isVoteUp = !isVoteUp;
-                                          kurdishnames.voting(
-                                              nameId: data.nameId,
-                                              isVoteUp: true);
-                                        },
-                                      );
-                                    },
-                                  ),
-                                  myElevatedButton(
-                                    color: Colors.red,
-                                    icon: isLiked
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    label: (isVoteDown) ? 'Voted' : 'Vote',
-                                    onPressed: () {
-                                      setState(
-                                        () {
-                                          isVoteDown = !isVoteDown;
-                                          isLiked = !isLiked;
-                                          kurdishnames.voting(
-                                              nameId: data.nameId,
-                                              isVoteUp: false);
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ],
-                              )
-                            ],
-                          );
-                        },
+                      child: Scrollbar(
+                        interactive: true,
+                        trackVisibility: true,
+                        thumbVisibility: true,
+                        scrollbarOrientation: ScrollbarOrientation.right,
+                        child: ListView.builder(
+                          itemCount: snapshot.data!.names.length,
+                          itemBuilder: (context, index) {
+                            var data = snapshot.data!.names[index];
+                            return ExpansionTile(
+                              leading: Text(data.positive_votes.toString()),
+                              trailing: Text(data.nameId.toString()),
+                              title: Text(data.name),
+                              children: [
+                                Text((data.desc == '')
+                                    ? 'No Description'
+                                    : data.desc),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    myElevatedButton(
+                                      color: Colors.blue,
+                                      icon: isLiked
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      label: (isVoteUp) ? 'Voted' : 'Vote',
+                                      onPressed: () {
+                                        setState(
+                                          () {
+                                            isLiked = !isLiked;
+                                            isVoteUp = !isVoteUp;
+                                            kurdishnames.voting(
+                                                nameId: data.nameId,
+                                                isVoteUp: true);
+                                          },
+                                        );
+                                      },
+                                    ),
+                                    myElevatedButton(
+                                      color: Colors.red,
+                                      icon: isLiked
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      label: (isVoteDown) ? 'Voted' : 'Vote',
+                                      onPressed: () {
+                                        setState(
+                                          () {
+                                            isVoteDown = !isVoteDown;
+                                            isLiked = !isLiked;
+                                            kurdishnames.voting(
+                                                nameId: data.nameId,
+                                                isVoteUp: false);
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                )
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     );
                   }),
