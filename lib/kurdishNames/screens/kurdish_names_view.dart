@@ -18,13 +18,13 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
   //TODO: rendering
   KurdishNameService kurdishnames = KurdishNameService();
   String gender = 'Male';
-  IconData genderIcon = Icons.male;
   Color genderColor = Colors.blue;
   String genderType = 'M';
-  int limitName = 20;
-  int? limitization;
+  IconData genderIcon = Icons.male;
   bool isLiked = false;
   bool isVoteUp = false, isVoteDown = false;
+  int limitName = 20;
+  int? limitization;
 
   @override
   Widget build(BuildContext context) {
@@ -97,9 +97,7 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                       limit: limitName, genderType: genderType),
                   builder: ((context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CupertinoActivityIndicator(),
-                      );
+                      return const Center(child: CupertinoActivityIndicator());
                     } else if (snapshot.hasError) {
                       return const Center(
                         child: Text('Error'),
@@ -140,8 +138,9 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                                             isLiked = !isLiked;
                                             isVoteUp = !isVoteUp;
                                             kurdishnames.voting(
-                                                nameId: data.nameId,
-                                                isVoteUp: true);
+                                              nameId: data.nameId,
+                                              isVoteUp: true,
+                                            );
                                           },
                                         );
                                       },
@@ -158,8 +157,9 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                                             isVoteDown = !isVoteDown;
                                             isLiked = !isLiked;
                                             kurdishnames.voting(
-                                                nameId: data.nameId,
-                                                isVoteUp: false);
+                                              nameId: data.nameId,
+                                              isVoteUp: false,
+                                            );
                                           },
                                         );
                                       },
