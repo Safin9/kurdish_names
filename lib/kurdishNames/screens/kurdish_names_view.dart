@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kurdish_names/kurdishNames/model/classs_model.dart';
 import 'package:kurdish_names/kurdishNames/services/kurdish_names_services.dart';
+import 'package:scroll_app_bar/scroll_app_bar.dart';
 
 class KurdishNamesView extends StatefulWidget {
   const KurdishNamesView({Key? key}) : super(key: key);
@@ -25,7 +26,7 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
   bool isVoteUp = false, isVoteDown = false;
   int limitName = 20;
   int? limitization;
-
+  final ScrollController _controller = ScrollController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +38,8 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
           },
           label: const Text('Limitization')),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      appBar: AppBar(
+      appBar: ScrollAppBar(
+        controller: _controller,
         elevation: 0,
         backgroundColor: Colors.white,
         actions: [
@@ -66,117 +68,84 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
         ],
       ),
       body: SizedBox(
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text('Kurdish Names'),
-            SizedBox(
-              width: double.infinity,
-              child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Limit',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) {
-                    if (value.isNotEmpty) {
-                      limitization = int.parse(value);
-                    } else {
-                      limitization = 20;
-                    }
-                  }),
-            ),
-            Expanded(
-              child: SizedBox(
-                child: FutureBuilder<KurdishNamesModel>(
-                  future: kurdishnames.fetchdata(
-                      limit: limitName, genderType: genderType),
-                  builder: ((context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CupertinoActivityIndicator());
-                    } else if (snapshot.hasError) {
-                      return const Center(
-                        child: Text('Error'),
-                      );
-                    }
-                    return Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: Scrollbar(
-                        interactive: true,
-                        trackVisibility: true,
-                        thumbVisibility: true,
-                        scrollbarOrientation: ScrollbarOrientation.right,
-                        child: ListView.builder(
-                          itemCount: snapshot.data!.names.length,
-                          itemBuilder: (context, index) {
-                            var data = snapshot.data!.names[index];
-                            return ExpansionTile(
-                              leading: Text(data.positive_votes.toString()),
-                              trailing: Text(data.nameId.toString()),
-                              title: Text(data.name),
-                              children: [
-                                Text((data.desc == '')
-                                    ? 'No Description'
-                                    : data.desc),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    myElevatedButton(
-                                      color: Colors.blue,
-                                      icon: isLiked
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      label: (isVoteUp) ? 'Voted' : 'Vote',
-                                      onPressed: () {
-                                        setState(
-                                          () {
-                                            isLiked = !isLiked;
-                                            isVoteUp = !isVoteUp;
-                                            kurdishnames.voting(
-                                              nameId: data.nameId,
-                                              isVoteUp: true,
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                    myElevatedButton(
-                                      color: Colors.red,
-                                      icon: isLiked
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      label: (isVoteDown) ? 'Voted' : 'Vote',
-                                      onPressed: () {
-                                        setState(
-                                          () {
-                                            isVoteDown = !isVoteDown;
-                                            isLiked = !isLiked;
-                                            kurdishnames.voting(
-                                              nameId: data.nameId,
-                                              isVoteUp: false,
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                )
-                              ],
-                            );
-                          },
-                        ),
-                      ),
+        child: FutureBuilder<KurdishNamesModel>(
+          future:
+              kurdishnames.fetchdata(limit: limitName, genderType: genderType),
+          builder: ((context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CupertinoActivityIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(
+                child: Text('Error'),
+              );
+            }
+            return Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scrollbar(
+                interactive: true,
+                trackVisibility: true,
+                thumbVisibility: true,
+                scrollbarOrientation: ScrollbarOrientation.right,
+                child: ListView.builder(
+                  itemCount: snapshot.data!.names.length,
+                  itemBuilder: (context, index) {
+                    var data = snapshot.data!.names[index];
+                    return ExpansionTile(
+                      leading: Text(data.positive_votes.toString()),
+                      trailing: Text(data.nameId.toString()),
+                      title: Text(data.name),
+                      children: [
+                        Text((data.desc == '') ? 'No Description' : data.desc),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            myElevatedButton(
+                              color: Colors.blue,
+                              icon: isLiked
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              label: (isVoteUp) ? 'Voted' : 'Vote',
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    isLiked = !isLiked;
+                                    isVoteUp = !isVoteUp;
+                                    kurdishnames.voting(
+                                      nameId: data.nameId,
+                                      isVoteUp: true,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            myElevatedButton(
+                              color: Colors.red,
+                              icon: isLiked
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              label: (isVoteDown) ? 'Voted' : 'Vote',
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    isVoteDown = !isVoteDown;
+                                    isLiked = !isLiked;
+                                    kurdishnames.voting(
+                                      nameId: data.nameId,
+                                      isVoteUp: false,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        )
+                      ],
                     );
-                  }),
+                  },
                 ),
               ),
-            ),
-          ],
+            );
+          }),
         ),
       ),
     );
