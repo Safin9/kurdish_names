@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kurdish_names/kurdishNames/model/classs_model.dart';
 import 'package:kurdish_names/kurdishNames/services/kurdish_names_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class KurdishNamesView extends StatefulWidget {
   const KurdishNamesView({Key? key}) : super(key: key);
@@ -25,6 +26,23 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
   int? limitization;
   bool isLiked = false;
   bool isVoteUp = false, isVoteDown = false;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  late Future<int> _counter;
+  @override
+  void initState() {
+    // TODO: implement initState
+    _counter = _prefs.then((prefs) => prefs.getInt('counter') ?? 0);
+    super.initState();
+  }
+
+  Future<void> _incrementCounter() async {
+    final SharedPreferences prefs = await _prefs;
+    final int counter = (prefs.getInt('counter') ?? 0) + 1;
+    prefs.setInt('counter', counter);
+    setState(() {
+      _counter = _prefs.then((prefs) => prefs.getInt('counter') ?? 0);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,6 +194,27 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 20,
+              width: double.infinity,
+              child: FutureBuilder(
+                  future: _counter,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CupertinoActivityIndicator(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return const Center(
+                        child: Text('Error'),
+                      );
+                    }
+                    return Text(snapshot.data.toString());
+                  }),
+            ),
+            FloatingActionButton(
+              onPressed: _incrementCounter,
+            )
           ],
         ),
       ),
