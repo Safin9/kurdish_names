@@ -118,7 +118,7 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                             var data = snapshot.data!.names[index];
                             return ExpansionTile(
                               leading: Text(data.positive_votes.toString()),
-                              trailing: Text(data.nameId.toString()),
+                              trailing: SelectableText(data.nameId.toString()),
                               title: Text(data.name),
                               children: [
                                 Text((data.desc == '')
