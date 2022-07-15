@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kurdish_names/kurdishNames/model/classs_model.dart';
 import 'package:kurdish_names/kurdishNames/services/kurdish_names_services.dart';
+import 'package:kurdish_names/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class KurdishNamesView extends StatefulWidget {
@@ -24,8 +25,7 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
   String genderType = 'M';
   int limitName = 20;
   int? limitization;
-  bool isLiked = false;
-  bool isVoteUp = false, isVoteDown = false;
+
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late Future<int> _counter;
   late Future<bool> _isThis;
@@ -63,6 +63,7 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             setState(() {
+              kurdishnames.name = null;
               limitName = limitization!;
             });
           },
@@ -81,6 +82,7 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                   label: gender,
                   color: genderColor,
                   onPressed: () => setState(() {
+                    kurdishnames.name = null;
                     genderType == 'M' ? genderType = 'F' : genderType = 'M';
                     (genderIcon == Icons.male)
                         ? genderIcon = Icons.female
@@ -126,8 +128,10 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                 Expanded(
                   child: SizedBox(
                     child: FutureBuilder<KurdishNamesModel>(
-                      future: kurdishnames.fetchdata(
-                          limit: limitName, genderType: genderType),
+                      future: kurdishnames.name != null
+                          ? null
+                          : kurdishnames.fetchdata(
+                              limit: limitName, genderType: genderType),
                       builder: ((context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -139,6 +143,7 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                             child: Text('Error'),
                           );
                         }
+
                         return Directionality(
                           textDirection: TextDirection.rtl,
                           child: Scrollbar(
@@ -150,6 +155,9 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                               itemCount: snapshot.data!.names.length,
                               itemBuilder: (context, index) {
                                 var data = snapshot.data!.names[index];
+                                bool? isLiked = storage.read('p${data.nameId}');
+                                bool? disLikeed =
+                                    storage.read('n${data.nameId}');
                                 return ExpansionTile(
                                   leading: Text(data.positive_votes.toString()),
                                   trailing:
@@ -165,38 +173,40 @@ class _KurdishNamesViewState extends State<KurdishNamesView> {
                                       children: [
                                         myElevatedButton(
                                           color: Colors.blue,
-                                          icon: isLiked
+                                          icon: (isLiked == true)
                                               ? Icons.favorite
                                               : Icons.favorite_border,
-                                          label: (isVoteUp) ? 'Voted' : 'Vote',
-                                          onPressed: () {
+                                          label: (isLiked == true)
+                                              ? 'Voted'
+                                              : 'Vote',
+                                          onPressed: () async {
+                                            await kurdishnames.voting(
+                                                nameId: data.nameId,
+                                                isVoteUp: true);
+
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(const SnackBar(
+                                              content: Text('is voted'),
+                                            ));
                                             setState(
-                                              () {
-                                                isLiked = !isLiked;
-                                                isVoteUp = !isVoteUp;
-                                                kurdishnames.voting(
-                                                    nameId: data.nameId,
-                                                    isVoteUp: true);
-                                              },
+                                              () {},
                                             );
                                           },
                                         ),
                                         myElevatedButton(
                                           color: Colors.red,
-                                          icon: isLiked
+                                          icon: disLikeed == false
                                               ? Icons.favorite
                                               : Icons.favorite_border,
-                                          label:
-                                              (isVoteDown) ? 'Voted' : 'Vote',
-                                          onPressed: () {
+                                          label: (disLikeed == false)
+                                              ? 'Voted'
+                                              : 'Vote',
+                                          onPressed: () async {
+                                            await kurdishnames.voting(
+                                                nameId: data.nameId,
+                                                isVoteUp: false);
                                             setState(
-                                              () {
-                                                isVoteDown = !isVoteDown;
-                                                isLiked = !isLiked;
-                                                kurdishnames.voting(
-                                                    nameId: data.nameId,
-                                                    isVoteUp: false);
-                                              },
+                                              () {},
                                             );
                                           },
                                         ),

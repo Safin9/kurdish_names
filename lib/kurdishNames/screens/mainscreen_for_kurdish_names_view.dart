@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kurdish_names/kurdishNames/model/get_class.dart';
+import 'package:kurdish_names/Controller/get_class.dart';
 
 class GetxController extends StatelessWidget {
-  GetxController({Key? key}) : super(key: key);
-  final Counter counter = Get.put(Counter());
+  const GetxController({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final counter = Get.find<Counter>();
     return Scaffold(
       appBar: AppBar(
         title: Obx((() => Text(counter.counet.toString()))),
@@ -22,6 +23,12 @@ class GetxController extends StatelessWidget {
                   onPressed: counter.decreament,
                   backgroundColor: Colors.red,
                   child: const Icon(Icons.text_decrease),
+                ),
+                const Spacer(),
+                FloatingActionButton(
+                  backgroundColor: Colors.amber,
+                  onPressed: counter.zero,
+                  child: const Icon(Icons.exposure_zero),
                 ),
                 const Spacer(),
                 FloatingActionButton(

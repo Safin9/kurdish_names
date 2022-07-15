@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:kurdish_names/Controller/bindings.dart';
+import 'package:kurdish_names/kurdishNames/screens/kurdish_names_view.dart';
 import 'package:kurdish_names/kurdishNames/screens/mainscreen_for_kurdish_names_view.dart';
 
 class MainScreen extends StatelessWidget {
@@ -6,9 +9,10 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      initialBinding: Bind(),
       debugShowCheckedModeBanner: false,
-      home: GetxController(),
+      home: const KurdishNamesView(),
     );
   }
 }
