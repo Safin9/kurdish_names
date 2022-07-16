@@ -23,19 +23,23 @@ class KurdishNameService {
     return name!;
   }
 
+// TODO: send 40 request by randoming 'uid'
   Future<void> voting({required int nameId, required bool isVoteUp}) async {
     var uri = Uri.parse("https://nawikurdi.com/api/vote");
-    http.Response response = await http.post(uri, body: {
-      "name_id": nameId.toString(),
-      "uid": "dwqdwdq",
-      "impact": isVoteUp ? "positive" : "negative"
-    });
-    print(response.body);
-    if (response.statusCode == 200) {
-      if (isVoteUp) {
-        await storage.write('p$nameId', true);
-      } else {
-        await storage.write('n$nameId', false);
+
+    for (int i = 50; i < 150; i++) {
+      http.Response response = await http.post(uri, body: {
+        "name_id": nameId.toString(),
+        "uid": "dwqdw$i",
+        "impact": isVoteUp ? "positive" : "negative"
+      });
+      print(response.body);
+      if (response.statusCode == 200) {
+        if (isVoteUp) {
+          await storage.write('p$nameId', true);
+        } else {
+          await storage.write('n$nameId', false);
+        }
       }
     }
   }
